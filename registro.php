@@ -34,7 +34,17 @@ include 'cabecera.php';
                     exit();
                 }
 
-                $conexion->query("INSERT INTO usuarios VALUES('', '" .$nombre ."', '" .$usuario ."', '" .$pwd ."')");
+                $consulta = $conexion->query("INSERT INTO usuarios VALUES('', '" .$nombre ."', '" .$usuario ."', '" .$pwd ."')");
+                
+                if(!$consulta)
+                {
+                    echo "Hay un error en el registro";
+                    exit();
+                }
+                else
+                {
+                    header('Location: juego.php');
+                }
             }
         ?>
         </div>

@@ -3,10 +3,10 @@ include 'cabecera.php';
 ?>
 
 <body>
-    <div id="contenedor">
+    <div id="contenedor_index">
 
         <div id="titulo">
-            <h1>Bienvenido a la app de tareas</h1>
+            <h1>Bienvenido al juego del tres en raya</h1>
         </div>
 
         <div id="botones">
