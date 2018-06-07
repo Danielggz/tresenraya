@@ -43,7 +43,7 @@ include 'cabecera.php';
                 }
                 else
                 {
-                    header('Location: juego.php');
+                    header('Location: login.php');
                 }
             }
         ?>

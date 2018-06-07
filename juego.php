@@ -16,7 +16,8 @@ if(isset($_GET['act']))
             }
             else
             {
-                header('Location: partida.php?id_partida=' .$conexion->insert_id);
+                $_SESSION['id_partida'] = $conexion->insert_id;
+                header('Location: partida.php');
             }
             break;
         
@@ -35,8 +36,8 @@ if(isset($_GET['act']))
                 <input type="submit" value="Nueva partida"/>
             </form>
         </div>
-        <div id="tabla_partidas">
-            <table>
+        <div>
+            <table id="tabla_partidas">
                 <thead>
                     <tr>
                         <td> Partida </td>
@@ -47,7 +48,7 @@ if(isset($_GET['act']))
                 <tbody>
                 
             <?php
-            $consulta = $conexion->query("SELECT usuario, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id");
+            $consulta = $conexion->query("SELECT usuario, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id WHERE player2 IS NULL");
             if($consulta->num_rows>0)
             {
                 while($partidas = $consulta->fetch_assoc())
@@ -61,6 +62,13 @@ if(isset($_GET['act']))
                     echo "</tr>";
                 }
             }
+            else{
+                echo "<tr>";
+                echo "<td colspan=3>No hay partidas disponibles en este momento</td>";
+                echo "</tr>";
+            }
+                    
+                
             ?>
         </div>
 

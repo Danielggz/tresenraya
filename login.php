@@ -3,6 +3,10 @@ include 'cabecera.php';
 ?>
 
     <body>
+        <div id="titulo">
+            <h2>Login</h2>
+        </div>
+
         <div id="formulario">
             <form action="login.php" method="post" id="formulario">
                 <label for='usuario'>Nombre: </label>

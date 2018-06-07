@@ -9,7 +9,7 @@ include 'cabecera.php';
             <h1>Bienvenido al juego del tres en raya</h1>
         </div>
 
-        <div id="botones">
+        <div id="botones_index">
             <form action="login.php" method="get">
                 <input type="submit" value="Entrar"/>
             </form>
