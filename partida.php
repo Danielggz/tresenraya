@@ -6,8 +6,9 @@ if(isset($_GET['id_partida']))
     $id_partida = $_GET['id_partida'];
     $idUser = $_SESSION['idUser'];
     $usuario = $_SESSION['usuario'];
+    $turno = rand(1,2);
     
-    $consulta = $conexion->query("UPDATE partidas SET player2=" .$_SESSION['idUser'] ." WHERE id=" .$id_partida);
+    $consulta = $conexion->query("UPDATE partidas SET player2=" .$_SESSION['idUser'] .", turno=$turno WHERE id=" .$id_partida);
 
     if($consulta)
     {
@@ -94,12 +95,8 @@ if(isset($_GET['id_enjuego']))
                 </tbody>
                 <tfoot>
                     <tr><td colspan=3>
-                        <div id="crear_partida">
-                            <form action="juego.php" method="get">
-                                <input type="hidden" name="act" value="nueva">
-                                <input type="hidden" name="act2" value="nueva2">
-                                <input type="submit" value="JUGAR!"/>
-                            </form>
+                        <div id='boton_jugar'>
+                            <input type="submit" id="inicioJuego" value="JUGAR!"/>
                         </div>
                     </td></tr>
                 </tfoot>
@@ -119,21 +116,40 @@ if(isset($_GET['id_enjuego']))
 
     <script>
     var crono;
+    var jugador;
+    var turno;
     var celdas = document.getElementsByTagName('td');
+    var botonInicio = document.getElementById('inicioJuego');
+    var mensajes = document.getElementById("mensajes");
+
+    actualizarTablero();    
 
     for(var i=0; i<celdas.length; i++)
     {
-        celdas[i].addEventListener('click', function(){
-          actualizarCelda(this.id);  
-        })
+        if(celdas[i].innerHTML=='')
+        {
+            celdas[i].addEventListener('click', function(){
+            actualizarCelda(this.id);  
+            });
+        }
+        
     }
 
-    cronoIni(ajax, 5000);
+    cronoIni(ajax, 1000);
+    // botonInicio.addEventListener("click", function()
+    // {
+        
+    //     botonInicio.disabled = true;
+    // });
+
+    
     
 
     function ajax()
     {
         var id=document.getElementById('id_partida').innerText;
+
+        // mensajes.innerHTML = 'Esperando al oponente.. '; 
 
         var req = new XMLHttpRequest();
         req.open('GET', 'consultasAjax.php?id=' + id, true);
@@ -146,7 +162,7 @@ if(isset($_GET['id_enjuego']))
             if(req.responseText!='Esperando jugador..')
             {
                 clearInterval(crono);
-                cronoIni(actualizarTablero, 2000);
+                cronoIni(actualizarTablero, 1000);
             }
         });
 
@@ -157,39 +173,141 @@ if(isset($_GET['id_enjuego']))
     {
         var id_partida = document.getElementById("id_partida").innerHTML;
 
-        var req = new XMLHttpRequest();
+        if(turno == jugador)
+        {
+            var req = new XMLHttpRequest();
             req.open('GET', 'consultasAjax.php?id_celda=' + id_celda + '&id_partida=' + id_partida, true);
             
             req.addEventListener("load", function () {
-                document.getElementById(id_celda).innerHTML = req.responseText;
+                console.log(req.responseText);
                 
             });
             req.send(null);
+        }
     }
 
     function actualizarTablero()
     {
         var id_partida = document.getElementById("id_partida").innerHTML;
         
-
         var req = new XMLHttpRequest();
             req.open('GET', 'consultasAjax.php?id_tablero=' + id_partida, true);
             
             req.addEventListener("load", function () {
-                // document.getElementById(id_celda).innerHTML = req.responseText;
-                var arrayPos = JSON.parse(req.response);
-                var arrayCeldas = document.getElementsByClassName('celda');
+                var player1_style = document.getElementById("jugador1");
+                var player2_style = document.getElementById("jugador2");
+                var obj = JSON.parse(req.response);
+                var arrayPos = JSON.parse(obj.celdas);
+                var player1 = obj.player1;
+                var player2 = obj.player2;
+                turno = obj.turno;
+                if(obj.usuario==player1)
+                {
+                    jugador = 1;
+                }
+                else
+                {
+                    jugador = 2;
+                }
+
+                if(turno==1)
+                {
+                    player1_style.setAttribute("class", "turno");
+                    player2_style.removeAttribute("class");  
+
+                }
+                else if(turno==2)
+                {
+                    player2_style.setAttribute("class", "turno");
+                    player1_style.removeAttribute("class");   
+                }
+                // mensajes.innerHTML = '';
                 
-                // for (const iterator in arrayCeldas) 
-                // {
-                //     arrayCeldas[iterator].innerHTML=arrayPos[iterator];
-                // }
+                 var arrayCeldas = document.getElementsByClassName('celda');
+                 var imgX = document.createElement('img');
+                 imgX.src = "img/X.png";
+                 var imgO = document.createElement('img');
+                 imgO.src = "img/O.png";
+
+                 var winner = victoria(arrayPos, player1, player2);
+                 if(winner)
+                 {
+                     alert('GANA' + winner);
+                 }
+                 
+
                 for(var i=0; i<arrayCeldas.length; i++)
                 {
-                    arrayCeldas[i].innerHTML = arrayPos[i];
+                    
+                    if(arrayCeldas[i].innerHTML=='')
+                    {
+                        if(arrayPos[i]==player1)
+                        {
+                            arrayCeldas[i].innerHTML = 'X';
+                            //arrayCeldas[i].appendChild(imgX);
+                        }
+                        if(arrayPos[i]==player2)
+                        {
+                            arrayCeldas[i].innerHTML = 'O';
+                            // arrayCeldas[i].appendChild(imgO);
+                        }
+                    }
+
+                    //victoria(arrayPos, player1, player2);
+                   
                 }
             });
             req.send(null);
+    }
+
+    function victoria(a, player1, player2)
+    {
+        var winner=0;
+        if(a[0]==a[1] && a[1]==a[2])
+        {
+            winner = a[0];
+        }
+        if(a[3]==a[4] && a[4]==a[5])
+        {
+            winner = a[3];
+        }
+        if(a[6]==a[7] && a[7]==a[8])
+        {
+            winner = a[6];
+        }
+        if(a[0]==a[3] && a[3]==a[6])
+        {
+            winner = a[0];
+        }
+        if(a[1]==a[4] && a[4]==a[7])
+        {
+            winner = a[1];
+        }
+        if(a[2]==a[5] && a[5]==a[8])
+        {
+            winner = a[2];
+        }
+        if(a[0]==a[4] && a[4]==a[8])
+        {
+            winner = a[0];
+        }
+        if(a[2]==a[4] && a[4]==a[6])
+        {
+            winner = a[2];
+        }
+
+        if(winner == player1)
+        {
+            return 'winner1';
+        }
+        else if(winner==player2)
+        {
+            return 'winner2';
+        }
+        else if(winner==0)
+        {
+            return -1;
+        }
     }
 
     function cronoIni(funcion,ms)

@@ -113,8 +113,14 @@ input[type=submit]:hover {
 {
     text-align: center;
 }
+.turno
+{
+    border: 1px solid red;
+}
 #tablero
 {
+    text-align: center;
+    font-size: 50px;
     margin-top: 75px;
     margin-left: 330px;
 }
@@ -133,10 +139,15 @@ input[type=submit]:hover {
     display: flex;
     justify-content: space-around;
 }
-#crear_partida input
+#boton_jugar input
 {
     background-color: rgb(201, 61, 25);;
     width: 400px;
+}
+#crear_partida input
+{
+    background-color: rgb(201, 61, 25);;
+    width: 400px; 
 }
 
 .tabla table {  

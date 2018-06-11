@@ -26,11 +26,23 @@
         $id_partida = $_GET['id_partida'];
         $id_user = $_SESSION['idUser'];
 
+        $consulta = $conexion->query("SELECT turno FROM partidas WHERE id=$id_partida");
+        $arrayDatos = $consulta->fetch_assoc();
+        $turno = $arrayDatos['turno'];
 
-        $movimiento = $conexion->query("UPDATE partidas SET $id_celda = $id_user WHERE id = $id_partida AND $id_celda=0");
+        switch ($turno) {
+            case 1:
+                $movimiento = $conexion->query("UPDATE partidas SET $id_celda = $id_user, turno=2 WHERE id = $id_partida AND $id_celda=0");
+                break;
+            
+            case 2:
+                $movimiento = $conexion->query("UPDATE partidas SET $id_celda = $id_user, turno=1 WHERE id = $id_partida AND $id_celda=0");
+                break;
+        }
+
         if($movimiento)
         {
-            echo "actualizado";
+            echo $turno;
         }
     }
 
@@ -42,8 +54,20 @@
         if($consulta->num_rows>0)
         {
             $r = $consulta->fetch_assoc();
-            $response = "[".$r["c0"] ."," .$r["c1"]."," .$r["c2"]."," .$r["c3"]."," .$r["c4"]."," .$r["c5"]."," .$r["c6"]."," .$r["c7"]."," .$r["c8"] ."]";
-            echo $response;
+            $celdas = "[".$r["c0"] ."," .$r["c1"]."," .$r["c2"]."," .$r["c3"]."," .$r["c4"]."," .$r["c5"]."," .$r["c6"]."," .$r["c7"]."," .$r["c8"] ."]";
+            $player1 = $r['player1'];
+            $player2 = $r['player2'];
+            $turno = $r['turno'];
+            $usuario = $_SESSION['idUser'];
+            $arrayObj = [
+                'player1'=> $player1,
+                'player2'=> $player2,
+                'celdas'=> $celdas,
+                'turno'=>$turno,
+                'usuario'=>$usuario 
+            ];
         }
+        
+        echo json_encode($arrayObj); 
     }
 ?>
