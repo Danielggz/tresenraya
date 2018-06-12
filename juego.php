@@ -1,5 +1,6 @@
 <?php
 include 'cabecera.php';
+include 'login_check.php';
 if(isset($_GET['act']))
 {
     $accion = $_GET['act'];
@@ -91,13 +92,13 @@ if(isset($_GET['act']))
                         </tr>
                         <tr>
                             <td>Partida</td>
-                            <td>Adversario</td>
+                            <td>Creador</td>
                             <td></td>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                            $consulta = $conexion->query("SELECT usuario, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id WHERE player2='" .$_SESSION['idUser'] ."' or player1='" .$_SESSION['idUser'] ."'");
+                            $consulta = $conexion->query("SELECT usuario, player1, player2, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id WHERE player2='" .$_SESSION['idUser'] ."' or player1='" .$_SESSION['idUser'] ."'");
                             if($consulta->num_rows>0)
                             {
                                 while($partidas = $consulta->fetch_assoc())

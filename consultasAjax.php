@@ -46,6 +46,13 @@
         }
     }
 
+    if(isset($_GET['winner']) && isset($_GET['id_partida']))
+    {
+        $winner = $_GET['winner'];
+        $id_partida = $_GET['id_partida'];
+        
+        $consulta = $conexion->query("UPDATE partidas SET estado=$winner WHERE id=$id_partida");
+    }
     if(isset($_GET['id_tablero']))
     {
         $id_partida = $_GET['id_tablero'];

@@ -36,10 +36,6 @@ include 'cabecera.php';
                     //GUARDAR SESIÓN
                     $_SESSION['idUser'] = $arrayResult['id'];
                     $_SESSION['usuario'] = $arrayResult['usuario'];
-
-                    foreach ($arrayResult as $key => $value) {
-                        echo $key ."---->" .$value ."<br/>";
-                    }
                     
                     header('Location: juego.php');
 
