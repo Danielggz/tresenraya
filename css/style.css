@@ -170,6 +170,11 @@ input[type=submit]:hover {
     width: 120px;
 }
 
+.tabla a:link, a:visited{
+    color: rgb(199, 59, 24);
+    font-style: bold;
+}
+
 .tabla thead {  
     background: rgb(255, 255, 255); /* Darken header a bit */
     font-weight: bold;

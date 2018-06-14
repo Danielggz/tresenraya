@@ -44,7 +44,7 @@ if(isset($_GET['act']))
                             <td> Jugador 2 </td>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id='tabla_ajax1'>
                     
                 <?php
                 $consulta = $conexion->query("SELECT usuario, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id WHERE player2 IS NULL");
@@ -96,7 +96,7 @@ if(isset($_GET['act']))
                             <td></td>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id='tabla_ajax2'>
                         <?php
                             $consulta = $conexion->query("SELECT usuario, player1, player2, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id WHERE player2='" .$_SESSION['idUser'] ."' or player1='" .$_SESSION['idUser'] ."'");
                             if($consulta->num_rows>0)
@@ -112,11 +112,6 @@ if(isset($_GET['act']))
                                     echo "</tr>";
                                 }
                             }
-                            else{
-                                // echo "<tr>";
-                                // echo "<td colspan=3>No hay partidas activas disponibles en este momento</td>";
-                                // echo "</tr>";
-                            } 
                         ?>
                     </tbody>
                 </table>
@@ -133,5 +128,6 @@ if(isset($_GET['act']))
             }
             ?>
         </div>
+        <script src='js/juegos.js'></script>
     </body>
 </html>

@@ -52,6 +52,16 @@
         $id_partida = $_GET['id_partida'];
         
         $consulta = $conexion->query("UPDATE partidas SET estado=$winner WHERE id=$id_partida");
+        if($consulta)
+        {
+            $select = $conexion->query("SELECT usuario from usuarios WHERE usuarios.id=$winner");
+            if($select->num_rows>0)
+            {
+                $arrayDatos = $select->fetch_assoc();
+                $winner = $arrayDatos['usuario'];
+                echo $winner;
+            }
+        }
     }
     if(isset($_GET['id_tablero']))
     {
@@ -76,5 +86,131 @@
         }
         
         echo json_encode($arrayObj); 
+    }
+
+    if(isset($_GET['tablas']))
+    {   
+        $obj = [];
+        $HTMLcontent1 = '';
+        $HTMLcontent2 = '';
+        $consulta = $conexion->query("SELECT usuario, partidas.id FROM usuarios INNER JOIN partidas on player1=usuarios.id WHERE player2 IS NULL");
+        if($consulta->num_rows>0)
+        {
+            while($partidas = $consulta->fetch_assoc())
+            {
+                $id = $partidas['id'];
+                $usuario = $partidas['usuario'];
+                $HTMLcontent1 = $HTMLcontent1  
+                    ."<tr>
+                    <td>$id</td>
+                    <td>$usuario</td>
+                    <td> <a href='partida.php?id_partida=$id'> Unirse a la partida </a> </td>
+                    </tr>";
+            }
+        }
+        else{
+            $HTMLcontent1 =  $HTMLcontent1 ."<tr>
+            <td colspan=3>No hay partidas disponibles en este momento</td>
+            </tr>";
+        } 
+        
+
+
+        $consulta2 = $conexion->query("SELECT usuario, partidas.id, turno, estado, player1, player2 FROM usuarios inner join partidas on player1=usuarios.id WHERE usuarios.id= ".$_SESSION['idUser'] ." or player2=" .$_SESSION['idUser'] ."");
+            if($consulta2->num_rows>0)
+            {
+                while($partidas = $consulta2->fetch_assoc())
+                {
+                    $id = $partidas['id'];
+                    $usuario = $partidas['usuario'];
+                    $turno = $partidas['turno'];
+                    $player1 = $partidas['player1'];
+                    $player2 = $partidas['player2'];
+                    
+                    if($partidas['estado']!=0)
+                    {
+                        $HTMLcontent2 = $HTMLcontent2 
+                            ."<tr>
+                            <td>$id</td>
+                            <td>$usuario</td>
+                            <td> <a href='partida.php?id_enjuego=$id'> Finalizada </a> </td>
+                            </tr>";
+                    }
+                    else 
+                    {
+                        switch ($turno) {
+                            case 1:
+                                if($player1 == $_SESSION['idUser'])
+                                {
+                                    $HTMLcontent2 = $HTMLcontent2 
+                                    ."<tr>
+                                    <td>$id</td>
+                                    <td>$usuario</td>
+                                    <td> <a href='partida.php?id_enjuego=$id'> Tu turno </a> </td>
+                                    </tr>";
+                                }
+                                else
+                                {
+                                    $HTMLcontent2 = $HTMLcontent2 
+                                    ."<tr>
+                                    <td>$id</td>
+                                    <td>$usuario</td>
+                                    <td> <a href='partida.php?id_enjuego=$id'> Turno del oponente </a> </td>
+                                    </tr>";
+                                }
+                                break;
+
+                            case 2:
+                                if($player2 == $_SESSION['idUser'])
+                                {
+                                    $HTMLcontent2 = $HTMLcontent2 
+                                    ."<tr>
+                                    <td>$id</td>
+                                    <td>$usuario</td>
+                                    <td> <a href='partida.php?id_enjuego=$id'> Tu turno </a> </td>
+                                    </tr>";
+                                }
+                                else{
+                                    $HTMLcontent2 = $HTMLcontent2 
+                                    ."<tr>
+                                    <td>$id</td>
+                                    <td>$usuario</td>
+                                    <td> <a href='partida.php?id_enjuego=$id'> Turno del oponente </a> </td>
+                                    </tr>";
+                                }
+                                break;
+                            
+                            default:
+                                $HTMLcontent2 = $HTMLcontent2 
+                                ."<tr>
+                                <td>$id</td>
+                                <td>$usuario</td>
+                                <td> <a href='partida.php?id_enjuego=$id'> Esperando oponente </a> </td>
+                                </tr>";
+                                break;
+                        }
+                    }
+
+                }
+            }
+
+        $consulta3 = $conexion->query("SELECT usuario, turno from usuarios inner join partidas on player1=usuarios.id WHERE player2='" .$_SESSION['idUser'] ."' or player1='" .$_SESSION['idUser'] ."'");
+        $arrayTurnos = [];
+        if($consulta3->num_rows>0)
+            {
+                while($partidas = $consulta3->fetch_assoc())
+                {
+                    array_push($arrayTurnos, $partidas['turno']);
+                }
+            }
+
+        $obj = [
+            'content1'=> $HTMLcontent1,
+            'content2'=> $HTMLcontent2,
+            'turnos' => $arrayTurnos
+        ];
+
+        echo json_encode($obj); 
+
     }
 ?>

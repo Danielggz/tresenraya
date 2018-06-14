@@ -54,9 +54,7 @@
           var req = new XMLHttpRequest();
           req.open('GET', 'consultasAjax.php?id_celda=' + id_celda + '&id_partida=' + id_partida, true);
           
-          req.addEventListener("load", function () {
-              console.log(req.responseText);
-              
+          req.addEventListener("load", function () {            
           });
           req.send(null);
       }
@@ -64,7 +62,6 @@
 
   function actualizarTablero()
   {
-    console.log("HOLA");
       var id_partida = document.getElementById("id_partida").innerHTML;
       
       var req = new XMLHttpRequest();
@@ -109,20 +106,13 @@
               //  imgO.src = "img/O.png";
 
                var winner = victoria(arrayPos, player1, player2, id_partida);
+
+               console.log(winner);
                if(winner!=-1)
                {
-                   switch (winner) {
-                       case 'winner1':
-                          winner = document.getElementById('user1').innerHTML;
-                          break;
-                          
-                      case 'winner2':
-                          winner = document.getElementById('user2').innerHTML;
-                          break;
-                   }
                    player1_DOM.removeAttribute("class");
                    player2_DOM.removeAttribute("class");
-                   document.getElementById('winner').innerHTML="HA GANADO " + winner.toUpperCase();   
+                   //document.getElementById('winner').innerHTML="HA GANADO " + winner.toUpperCase();   
                    clearInterval(crono);
                }
                
@@ -190,20 +180,16 @@
       if(winner == player1 || winner==player2)
       {
           var req = new XMLHttpRequest();
+          var respuesta;
           req.open('GET', 'consultasAjax.php?winner=' + winner + '&id_partida=' + id_partida, true);
           
           req.addEventListener("load", function () {
+            respuesta = req.response;
+            console.log(respuesta);
           });
           req.send(null);
+          return respuesta;
 
-          if(winner == player1)
-          {
-              return 'winner1';
-          }
-          else if(winner==player2)
-          {
-              return 'winner2';
-          }
       }
       else if(winner==0)
       {
